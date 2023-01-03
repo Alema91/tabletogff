@@ -24,7 +24,7 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 ## ANALYSIS     ################################
 ################################################
 
-mod_data<- openxlsx::read.xlsx("./data/mod_data.xlsx")
+mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
 
 ################################################
 ## FUNCTIONS     ###############################
@@ -74,7 +74,14 @@ create_df<- function(dataframe) {
 write_gff <- function(dataframe, file){
     encabezado1<- paste0("##gff-version 3")
     encabezado2<- paste0("##sequence-region p1 1 17139")
-    cat(encabezado1, "\n", encabezado2, "\n", file = file, sep = "")
+    encabezado3<- paste0("##sequence-region p2 1 10764")
+    encabezado4<- paste0("##sequence-region p3 1 12186")
+    encabezado5<- paste0("##sequence-region p4 1 6450")
+    encabezado6<- paste0("##sequence-region p5 1 12186")
+    encabezado7<- paste0("##sequence-region p6 1 12186")
+    encabezado8<- paste0("##sequence-region p7 1 12186")
+    encabezado9<- paste0("##sequence-region p9 1 12186")
+    cat(encabezado1, "\n", encabezado2, "\n", encabezado3, "\n", encabezado4, "\n", encabezado5, "\n", encabezado6, "\n", encabezado7, "\n", encabezado8, "\n", encabezado9, "\n", file = file, sep = "")
     write.table(dataframe, file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
 }
 
@@ -83,7 +90,10 @@ write_gff <- function(dataframe, file){
 ################################################
 
 df_final<- create_df(mod_data)
-write_gff(df_final, "prueba.gff")
+write_gff(df_final, "judiseq.gff")
+write_gff(head(df_final, 300), "output_prueba.gff")
+
+
 
 ################################################
 ## Pruebas #####################################
@@ -97,4 +107,12 @@ write_gff(df_final, "prueba.gff")
 #prueba_gff$score
 #prueba_gff_propio$score
 
+#for (i in 1:length(unique(df_final$seqid))){
+#    partes<- unique(df_final$seqid)
+#    df_filter<- subset(df_final, seqid == partes[i])
+#    print(partes[i])
+#    print(summary(df_filter[,4:5]))
+#}
 
+
+ 
