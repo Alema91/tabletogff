@@ -5,6 +5,19 @@
 # Session Data files
 .RData
 
+# Input data
+*.csv
+*.xlsx
+*.tsv
+*.txt
+judiseq.gff
+
+# Bioinfo
+*.fasta
+*.fa
+*.fna
+*.fastq.gz
+
 # User-specific files
 .Ruserdata
 
