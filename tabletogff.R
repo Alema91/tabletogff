@@ -74,7 +74,7 @@ create_df<- function(dataframe) {
     return(df_gff)
 }
 
-create_header<- function(dataframe, file) {
+create_gff<- function(dataframe, file) {
     lista<- list()
     for (i in 1:length(unique(dataframe$seqid))){
         partes<- unique(dataframe$seqid)
@@ -86,10 +86,7 @@ create_header<- function(dataframe, file) {
     }
     encabezado1<- paste0("##gff-version 3")
     cat(encabezado1, "\n", file = file, append = T, sep = "")
-    cat(unlist(lista), "\n", file = file, append = T, sep = "")
-}
-
-write_gff <- function(dataframe, file) {
+    cat(unlist(lista), file = file, append = T, sep = "")
     write.table(dataframe, file = file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
 }
 
@@ -99,8 +96,7 @@ write_gff <- function(dataframe, file) {
 
 df_final<- create_df(data_conjunto)
 data_prueba<- head(df_final, 300)
-create_header(data_prueba, "output_prueba.gff")
-write_gff(data_prueba, "output_prueba.gff")
+create_gff(data_prueba, "output_prueba.gff")
 
 
  
