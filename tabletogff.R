@@ -97,6 +97,5 @@ create_gff<- function(dataframe, file) {
 df_final<- create_df(data_conjunto)
 data_prueba<- head(df_final, 300)
 create_gff(data_prueba, "output_prueba.gff")
-
-
- 
+create_gff(df_final, "judiseq.gff")
+#write.table(unique(data_prueba$seqid), file = "index_fasta_prueba.txt", col.names = F, row.names = F, quote = F, sep = "\t")
