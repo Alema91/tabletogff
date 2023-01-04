@@ -96,6 +96,7 @@ write_gff <- function(dataframe, file) {
 ################################################
 ## USE     #####################################
 ################################################
+
 df_final<- create_df(data_conjunto)
 data_prueba<- head(df_final, 300)
 create_header(data_prueba, "output_prueba.gff")
