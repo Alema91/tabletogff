@@ -4,7 +4,7 @@
 ## Resume                                     ##
 ################################################
 
-# Revisar los resultados de la tabla de virus IMG/VR
+# Crear un gff a partir de una tabla de anotaciones
 
 ################################################
 ## LOAD LIBRARIES                             ##
