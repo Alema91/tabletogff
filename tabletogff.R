@@ -25,6 +25,8 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 ################################################
 
 mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
+metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
+data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
 
 ################################################
 ## FUNCTIONS     ###############################
@@ -42,6 +44,7 @@ list_with_values<- function(dataframe) {
 
 get_atributtes<- function(dataframe) {
     final_list<- list()
+    final_vector<- 0
     for (j in 1:nrow(dataframe)) {
     filter_df<- dataframe[j, c(1,2,9:10)]
     colnames(filter_df)<- c("gene_id", "gene_name", "sequence", "pfam")
@@ -55,7 +58,7 @@ get_atributtes<- function(dataframe) {
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
-        seqid = str_split(as.character(dataframe[,1]), "\\.", simplify = T)[,3],
+        seqid = dataframe[,38],
         source = rep("AG", nrow(dataframe)),
         type = str_split(as.character(dataframe[,2]), "\\.", simplify = T)[,2],
         start = dataframe[,3],
@@ -89,11 +92,9 @@ write_gff <- function(dataframe, file){
 ## USE     #####################################
 ################################################
 
-df_final<- create_df(mod_data)
+df_final<- create_df(data_conjunto)
 write_gff(df_final, "judiseq.gff")
 write_gff(head(df_final, 300), "output_prueba.gff")
-
-
 
 ################################################
 ## Pruebas #####################################
