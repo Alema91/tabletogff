@@ -74,46 +74,32 @@ create_df<- function(dataframe) {
     return(df_gff)
 }
 
-write_gff <- function(dataframe, file){
+create_header<- function(dataframe, file) {
+    lista<- list()
+    for (i in 1:length(unique(dataframe$seqid))){
+        partes<- unique(dataframe$seqid)
+        df_filter<- subset(dataframe, seqid == partes[i])
+        nombres<- partes[i]
+        minvalue<- min(df_filter[,4])
+        maxvalue<- max(df_filter[,5])
+        lista[[i]]<- paste0("##sequence-region", " ", nombres, " ", minvalue, " ", maxvalue, "\n")
+    }
     encabezado1<- paste0("##gff-version 3")
-    encabezado2<- paste0("##sequence-region p1 1 17139")
-    encabezado3<- paste0("##sequence-region p2 1 10764")
-    encabezado4<- paste0("##sequence-region p3 1 12186")
-    encabezado5<- paste0("##sequence-region p4 1 6450")
-    encabezado6<- paste0("##sequence-region p5 1 12186")
-    encabezado7<- paste0("##sequence-region p6 1 12186")
-    encabezado8<- paste0("##sequence-region p7 1 12186")
-    encabezado9<- paste0("##sequence-region p9 1 12186")
-    cat(encabezado1, "\n", encabezado2, "\n", encabezado3, "\n", encabezado4, "\n", encabezado5, "\n", encabezado6, "\n", encabezado7, "\n", encabezado8, "\n", encabezado9, "\n", file = file, sep = "")
-    write.table(dataframe, file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
+    cat(encabezado1, "\n", file = file, append = T, sep = "")
+    cat(unlist(lista), "\n", file = file, append = T, sep = "")
+}
+
+write_gff <- function(dataframe, file) {
+    write.table(dataframe, file = file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
 }
 
 ################################################
 ## USE     #####################################
 ################################################
-
 df_final<- create_df(data_conjunto)
-write_gff(df_final, "judiseq.gff")
-write_gff(head(df_final, 300), "output_prueba.gff")
-
-################################################
-## Pruebas #####################################
-################################################
-#
-#library(ape, quietly = TRUE, warn.conflicts = FALSE)
-#
-#prueba_gff<- read.gff("./data/genomic.gff", na.strings = c(".", "?"), GFF3 = TRUE); str(prueba_gff)
-#prueba_gff_propio<- read.gff("./prueba.gff", na.strings = c(".", "?"), GFF3 = TRUE); str(prueba_gff_propio)
-#
-#prueba_gff$score
-#prueba_gff_propio$score
-
-#for (i in 1:length(unique(df_final$seqid))){
-#    partes<- unique(df_final$seqid)
-#    df_filter<- subset(df_final, seqid == partes[i])
-#    print(partes[i])
-#    print(summary(df_filter[,4:5]))
-#}
+data_prueba<- head(df_final, 300)
+create_header(data_prueba, "output_prueba.gff")
+write_gff(data_prueba, "output_prueba.gff")
 
 
  
