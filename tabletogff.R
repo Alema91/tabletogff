@@ -27,7 +27,8 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 #mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
 #metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
 #data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
-mod_data<- read.csv2("./data/prueba_data.csv", header = T, sep = ",")
+mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
+mod_data[mod_data == ""]<- "-"
 df_fasta<- read.table("./data/length_fasta.tsv", header = T); colnames(df_fasta)<- c("Scaffold.name", "length_contig")
 data_conjunto<- merge(mod_data, df_fasta, by = c("Scaffold.name"))
 
@@ -59,7 +60,10 @@ get_atributtes<- function(dataframe) {
     for (j in 1:nrow(dataframe)) {
     filter_df<- dataframe[j, c(2,9:38)]
     colnames(filter_df)<- c("gene_id", "sequence", tolower(colnames(filter_df[,3:31])))
-    filter_df$pfam<- gsub(";", ",", filter_df$pfam)
+    #filter_df$pfam<- gsub(";", ",", filter_df$pfam)
+    #filter_df$interpro<- gsub(";", ",", filter_df$interpro)
+    columnas_cambio <- colnames(filter_df[,3:31])
+    filter_df[columnas_cambio] <- lapply(filter_df[columnas_cambio], gsub, pattern = ";", replacement = ",")
     filter_df$gene_name<- str_split(as.character(filter_df[,1]), ".p", simplify = T)[,1]
     filter_df<- filter_df[,c(1,32,2:31)]
     filter_lista<- list_with_values(filter_df)
@@ -74,8 +78,8 @@ create_df<- function(dataframe) {
         seqid = dataframe[,1],
         source = rep("AG", nrow(dataframe)),
         type = str_split(as.character(dataframe[,2]), "\\.", simplify = T)[,2],
-        start = dataframe[,3],
-        end = dataframe[,4],
+        start = dataframe[,3] + (dataframe[,6]-1),
+        end = dataframe[,4] + (dataframe[,7]-1),
         score = rep(".", nrow(dataframe)),
         #orf_length = dataframe[,5],
         #start_aac = dataframe[,6],
@@ -87,20 +91,20 @@ create_df<- function(dataframe) {
     return(df_gff)
 }
 
-create_gff<- function(dataframe, file) {
+create_gff<- function(dataframe1, dataframe2, file) {
     lista<- list()
-    for (i in 1:length(unique(dataframe$seqid))){
-        partes<- unique(dataframe$seqid)
-        df_filter<- subset(dataframe, seqid == partes[i])
+    partes<- unique(dataframe2$Scaffold.name)
+    for (i in 1:length(unique(dataframe2$Scaffold.name))){
+        df_filter<- subset(dataframe2, Scaffold.name == partes[i])
         nombres<- partes[i]
-        minvalue<- min(df_filter[,4])
-        maxvalue<- max(df_filter[,5])
+        minvalue<- 1
+        maxvalue<- df_filter[,2]
         lista[[i]]<- paste0("##sequence-region", " ", nombres, " ", minvalue, " ", maxvalue, "\n")
     }
     encabezado1<- paste0("##gff-version 3")
     cat(encabezado1, "\n", file = file, append = T, sep = "")
     cat(unlist(lista), file = file, append = T, sep = "")
-    write.table(dataframe, file = file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
+    write.table(dataframe1, file = file, append = T, col.names = F, row.names = F, quote = F, sep = "\t")
 }
 
 ################################################
@@ -108,8 +112,7 @@ create_gff<- function(dataframe, file) {
 ################################################
 
 df_final<- create_df(data_conjunto)
-View(head(df_final))
 data_prueba<- head(df_final, 300)
-create_gff(data_prueba, "output_prueba.gff")
-create_gff(df_final, "judiseq.gff")
+create_gff(data_prueba, df_fasta, "output_prueba.gff")
+create_gff(df_final, df_fasta, "judiseq.gff")
 #write.table(unique(data_prueba$seqid), file = "index_fasta_prueba.txt", col.names = F, row.names = F, quote = F, sep = "\t")
