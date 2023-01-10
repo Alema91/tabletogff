@@ -27,11 +27,22 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 #mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
 #metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
 #data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
-mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
+mod_data<- read.csv2("./data/prueba_data.csv", header = T, sep = ",")
+df_fasta<- read.table("./data/length_fasta.tsv", header = T); colnames(df_fasta)<- c("Scaffold.name", "length_contig")
+data_conjunto<- merge(mod_data, df_fasta, by = c("Scaffold.name"))
 
 ################################################
 ## FUNCTIONS     ###############################
 ################################################
+
+create_ind<- function(dataframe) {
+    ind<- data.frame(
+        variables = colnames(dataframe),
+        n = seq(1:length(colnames(dataframe)))
+    )
+    return(ind)
+}
+create_ind(data_conjunto)
 
 list_with_values<- function(dataframe) {
     lista<- list()
@@ -42,6 +53,7 @@ list_with_values<- function(dataframe) {
         }
     return(lista)
 }
+list_with_values(mod_data)
 
 get_atributtes<- function(dataframe) {
     final_list<- list()
@@ -56,6 +68,13 @@ get_atributtes<- function(dataframe) {
     }
     return(final_vector)
 }
+
+final_list<- list()
+final_vector<- 0
+for (j in 1:nrow(mod_data)) {
+    filter_df<- mod_data[j, c(1,2,9:10)]
+}
+
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
@@ -95,7 +114,7 @@ create_gff<- function(dataframe, file) {
 ## USE     #####################################
 ################################################
 
-df_final<- create_df(data_conjunto)
+df_final<- create_df(mod_data)
 data_prueba<- head(df_final, 300)
 create_gff(data_prueba, "output_prueba.gff")
 create_gff(df_final, "judiseq.gff")
