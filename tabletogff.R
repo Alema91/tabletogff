@@ -42,7 +42,6 @@ create_ind<- function(dataframe) {
     )
     return(ind)
 }
-create_ind(data_conjunto)
 
 list_with_values<- function(dataframe) {
     lista<- list()
@@ -53,15 +52,16 @@ list_with_values<- function(dataframe) {
         }
     return(lista)
 }
-list_with_values(mod_data)
 
 get_atributtes<- function(dataframe) {
     final_list<- list()
     final_vector<- 0
     for (j in 1:nrow(dataframe)) {
-    filter_df<- dataframe[j, c(1,2,9:10)]
-    colnames(filter_df)<- c("gene_id", "gene_name", "sequence", "pfam")
+    filter_df<- dataframe[j, c(2,9:38)]
+    colnames(filter_df)<- c("gene_id", "sequence", tolower(colnames(filter_df[,3:31])))
     filter_df$pfam<- gsub(";", ",", filter_df$pfam)
+    filter_df$gene_name<- str_split(as.character(filter_df[,1]), ".p", simplify = T)[,1]
+    filter_df<- filter_df[,c(1,32,2:31)]
     filter_lista<- list_with_values(filter_df)
     final_list[[j]]<- filter_lista
     final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
@@ -69,16 +69,10 @@ get_atributtes<- function(dataframe) {
     return(final_vector)
 }
 
-final_list<- list()
-final_vector<- 0
-for (j in 1:nrow(mod_data)) {
-    filter_df<- mod_data[j, c(1,2,9:10)]
-}
-
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
-        seqid = dataframe[,38],
+        seqid = dataframe[,1],
         source = rep("AG", nrow(dataframe)),
         type = str_split(as.character(dataframe[,2]), "\\.", simplify = T)[,2],
         start = dataframe[,3],
@@ -93,6 +87,8 @@ create_df<- function(dataframe) {
     )
     return(df_gff)
 }
+
+
 
 create_gff<- function(dataframe, file) {
     lista<- list()
@@ -114,7 +110,8 @@ create_gff<- function(dataframe, file) {
 ## USE     #####################################
 ################################################
 
-df_final<- create_df(mod_data)
+df_final<- create_df(data_conjunto)
+View(head(df_final))
 data_prueba<- head(df_final, 300)
 create_gff(data_prueba, "output_prueba.gff")
 create_gff(df_final, "judiseq.gff")
