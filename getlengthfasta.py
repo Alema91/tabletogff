@@ -20,8 +20,9 @@ def parse_fasta(nombre):
     return df
 
 # Arguments
+
 raw_table = sys.argv[1]
-if len(sys.argv) == 2:
+if len(sys.argv) == 3:
     outdir = sys.argv[2]
 else:
     outdir = "."
