@@ -27,6 +27,8 @@ if len(sys.argv) == 3:
 else:
     outdir = "."
 
+# output
+
 tabla = parse_fasta(raw_table)
 with open(f"{outdir}/length_fasta.tsv", "w") as out:
     tabla.to_csv(out, sep = "\t", index = False, header = True)
