@@ -18,7 +18,7 @@ def parse_fasta(nombre):
         lengths.append(int(len(fasta)))
     df = pd.DataFrame(data={"seq_id": ids, "length": lengths})
     return df
-
+    
 # Arguments
 
 raw_table = sys.argv[1]
