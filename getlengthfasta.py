@@ -15,7 +15,7 @@ def parse_fasta(nombre):
     lengths = []
     for fasta in fasta_sequences:
         ids.append(fasta.id)
-        lengths.append(len(fasta))
+        lengths.append(int(len(fasta)))
     df = pd.DataFrame(data={"seq_id": ids, "length": lengths})
     return df
 
