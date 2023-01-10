@@ -13,7 +13,7 @@
 library(plyr, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
-library(openxlsx, quietly = TRUE, warn.conflicts = FALSE)
+#library(openxlsx, quietly = TRUE, warn.conflicts = FALSE)
 library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 
 ### Not in o in ----
@@ -24,9 +24,10 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 ## ANALYSIS     ################################
 ################################################
 
-mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
-metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
-data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
+#mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
+#metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
+#data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
+mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
 
 ################################################
 ## FUNCTIONS     ###############################
