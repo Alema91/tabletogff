@@ -69,7 +69,6 @@ get_atributtes<- function(dataframe) {
     return(final_vector)
 }
 
-
 create_df<- function(dataframe) {
     df_gff<- data.frame(
         seqid = dataframe[,1],
@@ -87,8 +86,6 @@ create_df<- function(dataframe) {
     )
     return(df_gff)
 }
-
-
 
 create_gff<- function(dataframe, file) {
     lista<- list()
