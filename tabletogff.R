@@ -13,7 +13,6 @@
 library(plyr, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
-#library(openxlsx, quietly = TRUE, warn.conflicts = FALSE)
 library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 
 ### Not in o in ----
@@ -24,9 +23,6 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 ## ANALYSIS     ################################
 ################################################
 
-#mod_data<- openxlsx::read.xlsx("./data/total_data.xlsx", 1, startRow = 2)
-#metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
-#data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
 mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
 mod_data[mod_data == ""]<- "-"
 names(mod_data)[names(mod_data) == 'X.ID'] <- 'ID'
@@ -124,4 +120,4 @@ df_final<- create_df(data_conjunto)
 data_prueba<- head(df_final, 300)
 create_gff(data_prueba, df_fasta, "output_prueba.gff")
 create_gff(df_final, df_fasta, "judiseq.gff")
-#write.table(unique(data_prueba$seqid), file = "index_fasta_prueba.txt", col.names = F, row.names = F, quote = F, sep = "\t")
+
