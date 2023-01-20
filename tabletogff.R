@@ -28,6 +28,7 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 #metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
 #data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
 mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
+mod_data[mod_data == ""]<- "-"
 names(mod_data)[names(mod_data) == 'X.ID'] <- 'ID'
 contigs<- c("JudiSeq-A25_scaf_1", "JudiSeq-A25_scaf_2", "JudiSeq-A25_scaf_3")
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_scaf_1|200333bp|contig_3368:F:-126:contig_1760:F,contig_2176"
@@ -48,6 +49,7 @@ create_ind<- function(dataframe) {
     return(ind)
 }
 
+
 list_with_values<- function(dataframe) {
     lista<- list()
     for (i in 1:length(dataframe)){
@@ -58,24 +60,25 @@ list_with_values<- function(dataframe) {
     return(lista)
 }
 
+list_with_values(data_conjunto)
+
 get_atributtes<- function(dataframe) {
     final_list<- list()
     final_vector<- 0
-    for (j in 1:nrow(dataframe)) {
-    filter_df<- dataframe[j, c(2,9:38)]
-    colnames(filter_df)<- c("gene_id", "sequence", tolower(colnames(filter_df[,3:31])))
-    #filter_df$pfam<- gsub(";", ",", filter_df$pfam)
-    #filter_df$interpro<- gsub(";", ",", filter_df$interpro)
-    columnas_cambio <- colnames(filter_df[,3:31])
-    filter_df[columnas_cambio] <- lapply(filter_df[columnas_cambio], gsub, pattern = ";", replacement = ",")
-    filter_df$gene_name<- str_split(as.character(filter_df[,1]), ".p", simplify = T)[,1]
-    filter_df<- filter_df[,c(1,32,2:31)]
-    filter_lista<- list_with_values(filter_df)
-    final_list[[j]]<- filter_lista
-    final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
+    for (j in 1:nrow(prueba)) {
+        filter_df<- prueba[j, c(1, 2, 40, 9:38)]; names(filter_df)[names(filter_df) == 'Scaffold.name'] <- 'contig.name'
+        filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
+        filter_df<- filter_df[,c(1:2,34,3,4:33)]
+        colnames(filter_df)<- c("contig_name", "gene_id", "gene_name", "contig_length", "sequence", tolower(colnames(filter_df[,6:34])))
+        columnas_cambio <- colnames(filter_df[,6:34])
+        filter_df[columnas_cambio] <- lapply(filter_df[columnas_cambio], gsub, pattern = ";", replacement = ",")
+        filter_lista<- list_with_values(filter_df)
+        final_list[[j]]<- filter_lista
+        final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
     }
     return(final_vector)
 }
+
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
