@@ -28,9 +28,13 @@ library(stringr, quietly = TRUE, warn.conflicts = FALSE)
 #metadata<- read.table("/srv/www/NOBACKUP/JudiSeq/JudiSeq-Genes-Scaffolds-relation.tsv", header = F); colnames(metadata)<- c("Contig", "Scaffold.name")
 #data_conjunto<- merge(mod_data, metadata, by = c("Scaffold.name"))
 mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
-mod_data[mod_data == ""]<- "-"
-df_fasta<- read.table("./data/length_fasta.tsv", header = T); colnames(df_fasta)<- c("Scaffold.name", "length_contig")
-data_conjunto<- merge(mod_data, df_fasta, by = c("Scaffold.name"))
+names(mod_data)[names(mod_data) == 'X.ID'] <- 'ID'
+contigs<- c("JudiSeq-A25_scaf_1", "JudiSeq-A25_scaf_2", "JudiSeq-A25_scaf_3")
+mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_scaf_1|200333bp|contig_3368:F:-126:contig_1760:F,contig_2176"
+mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[2]]<- "JudiSeq-A25_scaf_2|1710977bp|contig_1165:F:1448:contig_3339:R:2:contig_295:F:2930:contig_2332:F,contig_1864"
+mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[3]]<- "JudiSeq-A25_scaf_3|1934252bp|contig_735:F:2148:contig_109:F,contig_3194:R:791:contig_1726:R:153:contig_3106:R:98:contig_3476:F"
+metadata<- read.table("./data/metadata.tsv", sep = "\t", header = T)
+data_conjunto<- merge(mod_data[,!names(mod_data) %in% c("X")], metadata, by = c("Scaffold.name"))
 
 ################################################
 ## FUNCTIONS     ###############################
