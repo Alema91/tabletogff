@@ -60,13 +60,11 @@ list_with_values<- function(dataframe) {
     return(lista)
 }
 
-list_with_values(data_conjunto)
-
-get_atributtes<- function(dataframe) {
+get_attributes<- function(dataframe) {
     final_list<- list()
     final_vector<- 0
-    for (j in 1:nrow(prueba)) {
-        filter_df<- prueba[j, c(1, 2, 40, 9:38)]; names(filter_df)[names(filter_df) == 'Scaffold.name'] <- 'contig.name'
+    for (j in 1:nrow(dataframe)) {
+        filter_df<- dataframe[j, c(1, 2, 40, 9:38)]; names(filter_df)[names(filter_df) == 'Scaffold.name'] <- 'contig.name'
         filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
         filter_df<- filter_df[,c(1:2,34,3,4:33)]
         colnames(filter_df)<- c("contig_name", "gene_id", "gene_name", "contig_length", "sequence", tolower(colnames(filter_df[,6:34])))
@@ -79,35 +77,29 @@ get_atributtes<- function(dataframe) {
     return(final_vector)
 }
 
-
 create_df<- function(dataframe) {
     df_gff<- data.frame(
-        seqid = dataframe[,1],
-        source = rep("AG", nrow(dataframe)),
+        seqid = dataframe[,39],
+        source = rep(".", nrow(dataframe)),
         type = str_split(as.character(dataframe[,2]), "\\.", simplify = T)[,2],
-        #start = dataframe[,3] + (dataframe[,6]-1),
-        start = dataframe[,3],
-        #end = dataframe[,4] + (dataframe[,7]-1),
-        end = dataframe[,4],
+        start = dataframe[,3] + (dataframe[,6]-1),
+        end = dataframe[,3] + (dataframe[,7]-1),
         score = rep(".", nrow(dataframe)),
-        #orf_length = dataframe[,5],
-        #start_aac = dataframe[,6],
-        #end_aac = dataframe[,7],
         strand = dataframe[,8],
         phase = rep(0, nrow(dataframe)),
-        attributes = get_atributtes(dataframe)
+        attributes = get_attributes(dataframe)
     )
     return(df_gff)
 }
 
 create_gff<- function(dataframe1, dataframe2, file) {
     lista<- list()
-    partes<- unique(dataframe2$Scaffold.name)
-    for (i in 1:length(unique(dataframe2$Scaffold.name))){
-        df_filter<- subset(dataframe2, Scaffold.name == partes[i])
+    partes<- unique(dataframe2$new_id)
+    for (i in 1:length(unique(dataframe2$new_id))){
+        df_filter<- subset(dataframe2, new_id == partes[i])
         nombres<- partes[i]
         minvalue<- 1
-        maxvalue<- df_filter[,2]
+        maxvalue<- df_filter[,3]
         lista[[i]]<- paste0("##sequence-region", " ", nombres, " ", minvalue, " ", maxvalue, "\n")
     }
     encabezado1<- paste0("##gff-version 3")
@@ -122,6 +114,5 @@ create_gff<- function(dataframe1, dataframe2, file) {
 
 df_final<- create_df(data_conjunto)
 data_prueba<- head(df_final, 300)
-create_gff(data_prueba, df_fasta, "output_prueba.gff")
-create_gff(df_final, df_fasta, "judiseq.gff")
-#write.table(unique(data_prueba$seqid), file = "index_fasta_prueba.txt", col.names = F, row.names = F, quote = F, sep = "\t")
+create_gff(data_prueba, metadata, "output_prueba.gff")
+create_gff(df_final, metadata, "judiseq.gff")
