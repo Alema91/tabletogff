@@ -14,23 +14,49 @@ library(plyr, quietly = TRUE, warn.conflicts = FALSE)
 library(dplyr, quietly = TRUE, warn.conflicts = FALSE)
 library(tidyr, quietly = TRUE, warn.conflicts = FALSE)
 library(stringr, quietly = TRUE, warn.conflicts = FALSE)
+library(optparse, quietly = TRUE, warn.conflicts = FALSE)
 
 ### Not in o in ----
 
 `%notin%` <- Negate(`%in%`)
 
 ################################################
+################################################
+## PARSE COMMAND-LINE PARAMETERS              ##
+################################################
+################################################
+
+option_list = list(
+    make_option(c("-i", "--input_table"), action="store", default=NA, type='character',
+              help="Path to input table with annotations"),
+    make_option(c("-m", "--path_to_metadata"), action="store", default=NA, type='character',
+              help="Path to input table with metadata")
+              )
+
+opt_parser <- OptionParser(option_list=option_list)
+opt        <- parse_args(opt_parser)
+
+if (is.null(opt$input_table)){
+  print_help(opt_parser)
+  stop("Please provide annotation table.", call.=FALSE)
+}
+if (is.null(opt$input_table)) {
+  print_help(opt_parser)
+  stop("Please provide a metadata table consists in: scaffold name, new id and scaffold length", call.=FALSE)
+}
+
+################################################
 ## ANALYSIS     ################################
 ################################################
 
-mod_data<- read.csv2("./data/JudiSeq-A25_v_JoinedAnnotations.tsv", header = T, sep = "\t")
+mod_data<- read.csv2(opt$input_table, header = T, sep = "\t")
 mod_data[mod_data == ""]<- "-"
 names(mod_data)[names(mod_data) == 'X.ID'] <- 'ID'
 contigs<- c("JudiSeq-A25_scaf_1", "JudiSeq-A25_scaf_2", "JudiSeq-A25_scaf_3")
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_scaf_1|200333bp|contig_3368:F:-126:contig_1760:F,contig_2176"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[2]]<- "JudiSeq-A25_scaf_2|1710977bp|contig_1165:F:1448:contig_3339:R:2:contig_295:F:2930:contig_2332:F,contig_1864"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[3]]<- "JudiSeq-A25_scaf_3|1934252bp|contig_735:F:2148:contig_109:F,contig_3194:R:791:contig_1726:R:153:contig_3106:R:98:contig_3476:F"
-metadata<- read.table("./data/metadata.tsv", sep = "\t", header = T)
+metadata<- read.table(opt$path_to_metadata, sep = "\t", header = T)
 metadata$final_id<- paste0("judiseq_", metadata$new_id)
 data_conjunto<- merge(mod_data[,!names(mod_data) %in% c("X")], metadata, by = c("Scaffold.name"))
 
@@ -63,7 +89,7 @@ get_attributes<- function(dataframe) {
         filter_df<- dataframe[j, c("ID", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
         filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
         filter_df<- filter_df[ ,c("ID", "gene_name", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
-        colnames(filter_df)<- c("gene_name", "gene_id", "contig_length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
+        colnames(filter_df)<- c("gene name", "gene id", "scaffold length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
         filter_df[,4:ncol(filter_df)] <- lapply(filter_df[4:ncol(filter_df)], gsub, pattern = ";", replacement = ",")
         filter_lista<- list_with_values(filter_df)
         final_list[[j]]<- filter_lista
