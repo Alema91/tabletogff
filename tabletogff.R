@@ -73,8 +73,6 @@ get_attributes<- function(dataframe) {
     return(final_vector)
 }
 
-create_ind(data_conjunto)
-
 create_df<- function(dataframe) {
     df_gff<- data.frame(
         seqid = dataframe[,41],
