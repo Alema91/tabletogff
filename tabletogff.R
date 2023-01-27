@@ -60,12 +60,10 @@ get_attributes<- function(dataframe) {
     final_list<- list()
     final_vector<- 0
     for (j in 1:nrow(dataframe)) {
-        # Pfam  |  InterPro  |  GO Terms | GENENAME |   DESCRIPTION
-        filter_df<- select(data_conjunto, c(ID, Scaffold.name, Pfam, InterPro, GO.Terms, GENENAME, DESCRIPTION, Scaffold.length))
+        filter_df<- dataframe[j, c("ID", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
         filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
-        filter_df<- select(filter_df, c(ID, gene_name, Scaffold.length, Pfam, InterPro, GO.Terms, GENENAME, DESCRIPTION))
-        colnames(filter_df)<- c("gene_id", "gene_name", "contig_length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
-        filter_df[,4:ncol(filter_df)] <- lapply(filter_df[4:ncol(filter_df)], gsub, pattern = ";", replacement = ",")
+        filter_df<- filter_df[j, c("ID", "gene_name", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
+        colnames(filter_df)<- c("gene_name", "gene_id", "contig_length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
         filter_lista<- list_with_values(filter_df)
         final_list[[j]]<- filter_lista
         final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
@@ -92,9 +90,9 @@ create_df<- function(dataframe) {
 
 create_gff<- function(dataframe1, dataframe2, file) {
     lista<- list()
-    partes<- unique(dataframe2$new_id)
-    for (i in 1:length(unique(dataframe2$new_id))){
-        df_filter<- subset(dataframe2, new_id == partes[i])
+    partes<- unique(dataframe2$final_id)
+    for (i in 1:length(unique(dataframe2$final_id))){
+        df_filter<- subset(dataframe2, final_id == partes[i])
         nombres<- partes[i]
         minvalue<- 1
         maxvalue<- df_filter[,3]
