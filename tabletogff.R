@@ -62,8 +62,9 @@ get_attributes<- function(dataframe) {
     for (j in 1:nrow(dataframe)) {
         filter_df<- dataframe[j, c("ID", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
         filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
-        filter_df<- filter_df[j, c("ID", "gene_name", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
+        filter_df<- filter_df[ ,c("ID", "gene_name", "Scaffold.length", "Pfam", "InterPro", "GO.Terms", "GENENAME", "DESCRIPTION")]
         colnames(filter_df)<- c("gene_name", "gene_id", "contig_length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
+        filter_df[,4:ncol(filter_df)] <- lapply(filter_df[4:ncol(filter_df)], gsub, pattern = ";", replacement = ",")
         filter_lista<- list_with_values(filter_df)
         final_list[[j]]<- filter_lista
         final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
