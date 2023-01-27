@@ -73,15 +73,17 @@ get_attributes<- function(dataframe) {
     return(final_vector)
 }
 
-aa<- get_attributes(data_conjunto)
+create_ind(data_conjunto)
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
-        seqid = dataframe[,39],
+        seqid = dataframe[,41],
         source = rep(".", nrow(dataframe)),
         type = str_split(as.character(dataframe[,2]), "\\.", simplify = T)[,2],
-        start = dataframe[,3] + (dataframe[,6]-1),
-        end = dataframe[,3] + (dataframe[,7]-1),
+        #start = dataframe[,3] + (dataframe[,6]-1),
+        start = dataframe[,3],
+        #end = dataframe[,3] + (dataframe[,7]-1),
+        end = dataframe[,4],
         score = rep(".", nrow(dataframe)),
         strand = dataframe[,8],
         phase = rep(0, nrow(dataframe)),
