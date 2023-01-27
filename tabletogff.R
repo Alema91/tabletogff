@@ -31,6 +31,7 @@ mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_sc
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[2]]<- "JudiSeq-A25_scaf_2|1710977bp|contig_1165:F:1448:contig_3339:R:2:contig_295:F:2930:contig_2332:F,contig_1864"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[3]]<- "JudiSeq-A25_scaf_3|1934252bp|contig_735:F:2148:contig_109:F,contig_3194:R:791:contig_1726:R:153:contig_3106:R:98:contig_3476:F"
 metadata<- read.table("./data/metadata.tsv", sep = "\t", header = T)
+metadata$final_id<- paste0("judiseq_", metadata$new_id)
 data_conjunto<- merge(mod_data[,!names(mod_data) %in% c("X")], metadata, by = c("Scaffold.name"))
 
 ################################################
@@ -44,7 +45,6 @@ create_ind<- function(dataframe) {
     )
     return(ind)
 }
-
 
 list_with_values<- function(dataframe) {
     lista<- list()
@@ -60,18 +60,20 @@ get_attributes<- function(dataframe) {
     final_list<- list()
     final_vector<- 0
     for (j in 1:nrow(dataframe)) {
-        filter_df<- dataframe[j, c(1, 2, 40, 9:38)]; names(filter_df)[names(filter_df) == 'Scaffold.name'] <- 'contig.name'
+        # Pfam  |  InterPro  |  GO Terms | GENENAME |   DESCRIPTION
+        filter_df<- select(data_conjunto, c(ID, Scaffold.name, Pfam, InterPro, GO.Terms, GENENAME, DESCRIPTION, Scaffold.length))
         filter_df$gene_name<- str_split(as.character(filter_df$ID), ".p", simplify = T)[,1]
-        filter_df<- filter_df[,c(1:2,34,3,4:33)]
-        colnames(filter_df)<- c("contig_name", "gene_id", "gene_name", "contig_length", "sequence", tolower(colnames(filter_df[,6:34])))
-        columnas_cambio <- colnames(filter_df[,6:34])
-        filter_df[columnas_cambio] <- lapply(filter_df[columnas_cambio], gsub, pattern = ";", replacement = ",")
+        filter_df<- select(filter_df, c(ID, gene_name, Scaffold.length, Pfam, InterPro, GO.Terms, GENENAME, DESCRIPTION))
+        colnames(filter_df)<- c("gene_id", "gene_name", "contig_length", tolower(colnames(filter_df[,4:ncol(filter_df)])))
+        filter_df[,4:ncol(filter_df)] <- lapply(filter_df[4:ncol(filter_df)], gsub, pattern = ";", replacement = ",")
         filter_lista<- list_with_values(filter_df)
         final_list[[j]]<- filter_lista
         final_vector[j]<- paste(unlist(final_list[[j]]), collapse = ";")
     }
     return(final_vector)
 }
+
+aa<- get_attributes(data_conjunto)
 
 create_df<- function(dataframe) {
     df_gff<- data.frame(
