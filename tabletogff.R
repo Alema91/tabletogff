@@ -27,9 +27,9 @@ library(optparse, quietly = TRUE, warn.conflicts = FALSE)
 ################################################
 
 option_list = list(
-    make_option(c("-i", "--input_table"), action="store", default=NA, type='character',
+    make_option(c("-i", "--path_input_table"), action="store", default=NA, type='character',
               help="Path to input table with annotations"),
-    make_option(c("-m", "--path_to_metadata"), action="store", default=NA, type='character',
+    make_option(c("-m", "--path_metadata"), action="store", default=NA, type='character',
               help="Path to input table with metadata")
               )
 
