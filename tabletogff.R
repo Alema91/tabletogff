@@ -4,7 +4,11 @@
 ## Resume                                     ##
 ################################################
 
-# Crear un gff a partir de una tabla de anotaciones
+# gff creation using annotations
+# USAGE: Rscript tabletogff.R -i data/JudiSeq-A25_v_JoinedAnnotations.tsv -m data/metadata.tsv
+# anotaciones: (required) Path to input table with annotations
+# metadata: (required) Path to metadata table consists in: scaffold name, new id and scaffold length
+
 
 ################################################
 ## LOAD LIBRARIES                             ##
@@ -36,11 +40,11 @@ option_list = list(
 opt_parser <- OptionParser(option_list=option_list)
 opt        <- parse_args(opt_parser)
 
-if (is.null(opt$input_table)){
+if (is.null(opt$path_input_table)){
   print_help(opt_parser)
   stop("Please provide annotation table.", call.=FALSE)
 }
-if (is.null(opt$input_table)) {
+if (is.null(opt$path_input_table)) {
   print_help(opt_parser)
   stop("Please provide a metadata table consists in: scaffold name, new id and scaffold length", call.=FALSE)
 }
@@ -49,14 +53,16 @@ if (is.null(opt$input_table)) {
 ## ANALYSIS     ################################
 ################################################
 
-mod_data<- read.csv2(opt$input_table, header = T, sep = "\t")
+# tabla anotaciones
+mod_data<- read.csv2(opt$path_input_table, header = T, sep = "\t")
 mod_data[mod_data == ""]<- "-"
 names(mod_data)[names(mod_data) == 'X.ID'] <- 'ID'
 contigs<- c("JudiSeq-A25_scaf_1", "JudiSeq-A25_scaf_2", "JudiSeq-A25_scaf_3")
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_scaf_1|200333bp|contig_3368:F:-126:contig_1760:F,contig_2176"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[2]]<- "JudiSeq-A25_scaf_2|1710977bp|contig_1165:F:1448:contig_3339:R:2:contig_295:F:2930:contig_2332:F,contig_1864"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[3]]<- "JudiSeq-A25_scaf_3|1934252bp|contig_735:F:2148:contig_109:F,contig_3194:R:791:contig_1726:R:153:contig_3106:R:98:contig_3476:F"
-metadata<- read.table(opt$path_to_metadata, sep = "\t", header = T)
+# tabla metadatos
+metadata<- read.table(opt$path_metadata, sep = "\t", header = T); colnames(metadata)<- c("Scaffold.name", "new_id", "Scaffold.length")
 metadata$final_id<- paste0("judiseq_", metadata$new_id)
 data_conjunto<- merge(mod_data[,!names(mod_data) %in% c("X")], metadata, by = c("Scaffold.name"))
 
