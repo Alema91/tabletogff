@@ -62,7 +62,7 @@ mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[1]]<- "JudiSeq-A25_sc
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[2]]<- "JudiSeq-A25_scaf_2|1710977bp|contig_1165:F:1448:contig_3339:R:2:contig_295:F:2930:contig_2332:F,contig_1864"
 mod_data$Scaffold.name[mod_data$Scaffold.name %in% contigs[3]]<- "JudiSeq-A25_scaf_3|1934252bp|contig_735:F:2148:contig_109:F,contig_3194:R:791:contig_1726:R:153:contig_3106:R:98:contig_3476:F"
 # tabla metadatos
-metadata<- read.table(opt$path_metadata, sep = "\t", header = T); colnames(metadata)<- c("Scaffold.name", "new_id", "Scaffold.length")
+metadata<- read.table(opt$path_metadata, sep = "\t", header = F); colnames(metadata)<- c("Scaffold.name", "new_id", "Scaffold.length")
 metadata$final_id<- paste0("judiseq_", metadata$new_id)
 data_conjunto<- merge(mod_data[,!names(mod_data) %in% c("X")], metadata, by = c("Scaffold.name"))
 
