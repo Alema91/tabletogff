@@ -19,6 +19,7 @@ judiseq.gff
 *.fastq.gz
 *.bam
 *.sam
+
 # User-specific files
 .Ruserdata
 
